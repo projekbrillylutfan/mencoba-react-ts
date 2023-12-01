@@ -3,6 +3,7 @@ import { useState } from "react";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const cars_api_base_url: string = "http://localhost:8080";
   return (
     <div>
       <h1>Login Page</h1>
@@ -27,7 +28,38 @@ export default function Login() {
           placeholder="masukkan password  "
         />
 
-        <button>Login</button>
+        <button
+          onClick={async (e) => {
+            e.preventDefault();
+
+            const payload = {
+              email: email,
+              password: password,
+            };
+
+            const response = await fetch(
+              cars_api_base_url + '/api/auth/login',
+              {
+                method: 'post',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+              }
+            );
+
+            const responseJson = await response.json();
+
+            if (response.status !== 200) {
+              alert('error: ' + responseJson.message);
+            }
+
+            localStorage.setItem(
+              'access_token',
+              responseJson.data.access_token
+            );
+          }}
+        >
+          Login
+        </button>
       </form>
     </div>
   );
